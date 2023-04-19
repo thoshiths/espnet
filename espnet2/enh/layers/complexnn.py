@@ -67,6 +67,7 @@ class NavieComplexLSTM(nn.Module):
 
 
 def complex_cat(inputs, axis):
+
     real, imag = [], []
     for idx, data in enumerate(inputs):
         r, i = torch.chunk(data, 2, axis)
@@ -326,6 +327,7 @@ class ComplexBatchNorm(torch.nn.Module):
         assert xr.size(1) == self.num_features
 
     def forward(self, inputs):
+
         xr, xi = torch.chunk(inputs, 2, axis=self.complex_axis)
         exponential_average_factor = 0.0
 

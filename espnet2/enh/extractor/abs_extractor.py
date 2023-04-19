@@ -15,4 +15,5 @@ class AbsExtractor(torch.nn.Module, ABC):
         ilens_aux: torch.Tensor,
         suffix_tag: str = "",
     ) -> Tuple[Tuple[torch.Tensor], torch.Tensor, OrderedDict]:
+
         raise NotImplementedError

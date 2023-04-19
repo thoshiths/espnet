@@ -8,7 +8,7 @@ import shutil
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple, Union, List
 
 import numpy as np
 import soundfile as sf
@@ -84,6 +84,9 @@ class Text2Speech:
         seed: int = 777,
         always_fix_seed: bool = False,
         prefer_normalized_feats: bool = False,
+        quantize_tts_model: bool = False,
+        quantize_modules: List[str] = ["Linear"],
+        quantize_dtype: str = "qint8",
     ):
         """Initialize Text2Speech module."""
         assert check_argument_types()
@@ -93,6 +96,12 @@ class Text2Speech:
             train_config, model_file, device
         )
         model.to(dtype=getattr(torch, dtype)).eval()
+        if quantize_tts_model:
+            logging.info("Use quantized tts model for decoding.")
+
+            model = torch.quantization.quantize_dynamic(
+                model, qconfig_spec=quantize_modules, dtype=quantize_dtype
+            )
         self.device = device
         self.dtype = dtype
         self.train_args = train_args
@@ -119,6 +128,7 @@ class Text2Speech:
         logging.info(f"TTS:\n{self.tts}")
         if self.vocoder is not None:
             logging.info(f"Vocoder:\n{self.vocoder}")
+        
 
         # setup decoding config
         decode_conf = {}

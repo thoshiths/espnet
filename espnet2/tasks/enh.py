@@ -58,7 +58,6 @@ from espnet2.enh.separator.rnn_separator import RNNSeparator
 from espnet2.enh.separator.skim_separator import SkiMSeparator
 from espnet2.enh.separator.svoice_separator import SVoiceSeparator
 from espnet2.enh.separator.tcn_separator import TCNSeparator
-from espnet2.enh.separator.tfgridnet_separator import TFGridNet
 from espnet2.enh.separator.transformer_separator import TransformerSeparator
 from espnet2.iterators.abs_iter_factory import AbsIterFactory
 from espnet2.tasks.abs_task import AbsTask
@@ -104,7 +103,6 @@ separator_choices = ClassChoices(
         wpe_beamformer=NeuralBeamformer,
         tcn_nomask=TCNSeparatorNomask,
         ineube=iNeuBe,
-        tfgridnet=TFGridNet,
     ),
     type_check=AbsSeparator,
     default="rnn",
@@ -518,6 +516,7 @@ class EnhancementTask(AbsTask):
         mode: str,
         kwargs: dict = None,
     ) -> AbsIterFactory:
+
         dynamic_mixing = getattr(args, "dynamic_mixing", False)
         if dynamic_mixing and mode == "train":
             args = copy.deepcopy(args)

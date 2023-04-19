@@ -297,6 +297,7 @@ class SkiM(nn.Module):
 
 
 if __name__ == "__main__":
+
     model = SkiM(
         333,
         111,

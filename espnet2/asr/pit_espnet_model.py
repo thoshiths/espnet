@@ -103,6 +103,7 @@ class PITLossWrapper(AbsLossWrapper):
         num_ref = None
 
         for arg in args:  # (batch, num_inf, ...)
+
             if batch_size is None:
                 batch_size, num_ref = arg.shape[:2]
             else:
@@ -130,7 +131,7 @@ class ESPnetASRModel(SingleESPnetASRModel):
         preencoder: Optional[AbsPreEncoder],
         encoder: AbsEncoder,
         postencoder: Optional[AbsPostEncoder],
-        decoder: Optional[AbsDecoder],
+        decoder: AbsDecoder,
         ctc: CTC,
         joint_network: Optional[torch.nn.Module],
         ctc_weight: float = 0.5,

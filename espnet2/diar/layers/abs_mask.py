@@ -19,4 +19,5 @@ class AbsMask(torch.nn.Module, ABC):
         bottleneck_feat,
         num_spk,
     ) -> Tuple[Tuple[torch.Tensor], torch.Tensor, OrderedDict]:
+
         raise NotImplementedError

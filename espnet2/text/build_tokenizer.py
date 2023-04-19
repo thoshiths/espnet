@@ -8,7 +8,6 @@ from espnet2.text.char_tokenizer import CharTokenizer
 from espnet2.text.hugging_face_tokenizer import HuggingFaceTokenizer
 from espnet2.text.phoneme_tokenizer import PhonemeTokenizer
 from espnet2.text.sentencepiece_tokenizer import SentencepiecesTokenizer
-from espnet2.text.whisper_tokenizer import OpenAIWhisperTokenizer
 from espnet2.text.word_tokenizer import WordTokenizer
 
 
@@ -20,7 +19,6 @@ def build_tokenizer(
     space_symbol: str = "<space>",
     delimiter: str = None,
     g2p_type: str = None,
-    nonsplit_symbol: Iterable[str] = None,
 ) -> AbsTokenizer:
     """A helper function to instantiate Tokenizer"""
     assert check_argument_types()
@@ -60,7 +58,6 @@ def build_tokenizer(
             non_linguistic_symbols=non_linguistic_symbols,
             space_symbol=space_symbol,
             remove_non_linguistic_symbols=remove_non_linguistic_symbols,
-            nonsplit_symbols=nonsplit_symbol,
         )
 
     elif token_type == "phn":
@@ -70,9 +67,6 @@ def build_tokenizer(
             space_symbol=space_symbol,
             remove_non_linguistic_symbols=remove_non_linguistic_symbols,
         )
-
-    elif "whisper" in token_type:
-        return OpenAIWhisperTokenizer(bpemodel)
 
     else:
         raise ValueError(

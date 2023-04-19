@@ -6,7 +6,6 @@ from typing import Iterable, List, Optional, Union
 
 import g2p_en
 import jamo
-from packaging.version import parse as V
 from typeguard import check_argument_types
 
 from espnet2.text.abs_tokenizer import AbsTokenizer
@@ -43,6 +42,8 @@ g2p_choices = [
     "korean_jaso",
     "korean_jaso_no_space",
     "g2p_is",
+    "espeak_ng_en_gb",
+
 ]
 
 
@@ -63,18 +64,13 @@ def pyopenjtalk_g2p(text) -> List[str]:
     return phones
 
 
-def _extract_fullcontext_label(text):
+def pyopenjtalk_g2p_accent(text) -> List[str]:
+    import re
+
     import pyopenjtalk
 
-    if V(pyopenjtalk.__version__) >= V("0.3.0"):
-        return pyopenjtalk.make_label(pyopenjtalk.run_frontend(text))
-    else:
-        return pyopenjtalk.run_frontend(text)[1]
-
-
-def pyopenjtalk_g2p_accent(text) -> List[str]:
     phones = []
-    for labels in _extract_fullcontext_label(text):
+    for labels in pyopenjtalk.run_frontend(text)[1]:
         p = re.findall(r"\-(.*?)\+.*?\/A:([0-9\-]+).*?\/F:.*?_([0-9]+)", labels)
         if len(p) == 1:
             phones += [p[0][0], p[0][2], p[0][1]]
@@ -82,8 +78,12 @@ def pyopenjtalk_g2p_accent(text) -> List[str]:
 
 
 def pyopenjtalk_g2p_accent_with_pause(text) -> List[str]:
+    import re
+
+    import pyopenjtalk
+
     phones = []
-    for labels in _extract_fullcontext_label(text):
+    for labels in pyopenjtalk.run_frontend(text)[1]:
         if labels.split("-")[1].split("+")[0] == "pau":
             phones += ["pau"]
             continue
@@ -122,7 +122,9 @@ def pyopenjtalk_g2p_prosody(text: str, drop_unvoiced_vowels: bool = True) -> Lis
         modeling for neural TTS`: https://doi.org/10.1587/transinf.2020EDP7104
 
     """
-    labels = _extract_fullcontext_label(text)
+    import pyopenjtalk
+
+    labels = pyopenjtalk.run_frontend(text)[1]
     N = len(labels)
 
     phones = []
@@ -561,6 +563,20 @@ class PhonemeTokenizer(AbsTokenizer):
                 with_stress=True,
                 preserve_punctuation=True,
                 strip=True,
+                word_separator=" ",
+                phone_separator="",
+                split_by_single_token=True,
+            )
+        elif g2p_type == "espeak_ng_en_gb":
+            # VITS official implementation-like processing
+            # Reference: https://github.com/jaywalnut310/vits
+            self.g2p = Phonemizer(
+                language="en-gb",
+                backend="espeak",
+                with_stress=True,
+                preserve_punctuation=True,
+                strip=True,
+                language_switch="remove-flags",
                 word_separator=" ",
                 phone_separator="",
                 split_by_single_token=True,

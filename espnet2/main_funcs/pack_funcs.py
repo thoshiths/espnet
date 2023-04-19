@@ -34,6 +34,7 @@ class Archiver:
         if self.type == "tar":
             self.fopen = tarfile.open(file, mode=mode)
         elif self.type == "zip":
+
             self.fopen = zipfile.ZipFile(file, mode=mode)
         else:
             raise ValueError(f"Not supported: type={type}")
